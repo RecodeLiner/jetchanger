@@ -5,19 +5,21 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import java.lang.reflect.Type
 
-class CustomSerial : JsonDeserializer<Currencies> {
+class RateDeserializer : JsonDeserializer<Rates> {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?
-    ): Currencies {
+    ): Rates {
         val jsonObject = json?.asJsonObject
-        val map = arrayListOf<String>()
-        if (jsonObject != null) {
-            jsonObject.entrySet().forEach { entry ->
-                map.add(entry.key)
-            }
+        if (jsonObject?.entrySet()?.size == 1) {
+            return Rates(
+                code = jsonObject.entrySet()!!.first().key,
+                value = jsonObject.entrySet()!!.first().value.asString
+            )
         }
-        return Currencies(map)
+        else {
+            throw Exception()
+        }
     }
 }
